@@ -1,0 +1,21 @@
+{
+  "articles": [
+    {
+      "path": "about.html",
+      "title": "About this site",
+      "description": "Some additional details about the website",
+      "author": [],
+      "contents": "\n\n\n\n",
+      "last_modified": "2021-08-30T20:49:14+10:00"
+    },
+    {
+      "path": "index.html",
+      "title": "Ziang Li",
+      "description": "This website is mainly used to record infection cases, deaths and other related data in some countries since the COVID-19 outbreak. We hope that through the changing trends of these data, we can gain insight into the impact of the epidemic on this country or region, and whether the government's control of the epidemic is effective.\n",
+      "author": [],
+      "contents": "\n\n\n\n",
+      "last_modified": "2021-08-30T22:18:48+10:00"
+    }
+  ],
+  "collections": []
+}
