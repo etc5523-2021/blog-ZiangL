@@ -14,6 +14,13 @@ library(tidyverse)
 
 ```
 
+```{r}
+covid19 <- read.csv("owid-covid-data.csv") 
+
+China <- covid19 %>% 
+  filter(location == "China")
+```
+
 
 
 
