@@ -1,5 +1,5 @@
 ---
-title: "About this site"
+title: "The COVID19 situation in China"
 description: |
   Some additional details about the website
 ---
@@ -11,7 +11,12 @@ knitr::opts_chunk$set(echo = FALSE)
 ```{r}
 library(readr)
 library(tidyverse)
-
+library(DT)
+library(gganimate)
+library(ggplot2)
+library(viridis)
+library(hrbrthemes)
+library(gt)
 ```
 
 ```{r}
@@ -20,6 +25,72 @@ covid19 <- read.csv("owid-covid-data.csv")
 China <- covid19 %>% 
   filter(location == "China")
 ```
+
+```{r}
+Confirmed_cases <- China %>% 
+  select(date, total_cases, new_cases, total_cases_per_million, new_cases_per_million)
+
+Confirmed_deaths <- China %>% 
+  select(date, total_deaths, new_deaths, new_deaths_smoothed, total_deaths_per_million, new_deaths_per_million, new_deaths_smoothed_per_million)
+
+Vaccinations <- China %>% 
+  select(date, total_vaccinations, people_vaccinated, people_fully_vaccinated, total_boosters, new_vaccinations, new_vaccinations_smoothed, total_vaccinations_per_hundred, people_vaccinated_per_hundred, people_fully_vaccinated_per_hundred, total_boosters_per_hundred, new_vaccinations_smoothed_per_million, population)
+
+T1 <- DT::datatable(Confirmed_cases, options = list(pageLength = 4))
+T1
+```
+
+```{r}
+COVID19_update <- China %>% 
+  select(total_cases, new_cases, total_deaths, new_deaths)
+
+# %>% pivot_longer(-date, names_to = "type") 
+  
+
+Date <- China %>% 
+  select(date)
+
+date <- as.Date(Date$date, format="%Y-%m-%d")
+
+COVID19_update <- cbind(COVID19_update,date) %>% pivot_longer(-date, names_to = "type") 
+
+
+update <- ggplot(COVID19_update, aes(x=date, y=value, group=type, color=type)) +
+    geom_line() +
+    geom_point() +
+    scale_color_viridis(discrete = TRUE) +
+    ggtitle("The trend of COVID19 update in China") +
+    theme_ipsum() +
+    ylab("Number of COVID19 updates") +
+    transition_reveal(date)
+
+animate(update, nframes = 500, fps = 25,  width = 1200, height = 1000, 
+        renderer = gifski_renderer("updates.gif"))
+```
+
+```{r}
+new_vac <- Vaccinations[-c(1:328),]
+new_vac <- new_vac %>% 
+  select(-c(8:12))
+vac_status <- new_vac %>% 
+  summarise(`Total Vaccinations` = max(new_vac$total_vaccinations, na.rm = T),
+            `People Vaccinated Rate` = max(new_vac$people_vaccinated, na.rm = T) / mean(new_vac$population, na.rm = T),
+            `Fully Vaccinated Rate` = max(new_vac$people_fully_vaccinated, na.rm = T) / mean(new_vac$population, na.rm = T),
+            `Daily New Vaccinations` = mean(new_vac$new_vaccinations, na.rm = T)) 
+
+T2 <- gt(vac_status) %>% 
+  tab_header(title = "Vaccinations Status of China",
+             subtitle = "Chinese Vaccinations Status from 15Dec 2020 to 30Aug 2021")
+T2
+```
+
+
+
+
+
+
+
+
 
 
 
