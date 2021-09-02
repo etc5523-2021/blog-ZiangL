@@ -1,7 +1,7 @@
 ---
-title: "COVID19 situation in China"
+title: "COVID-19 situation in China"
 description: |
-  Here is the COVID19 situation in China from 22Jan 2020 to 30Aug 2021.
+  Here is the COVID-19 situation in China from 22Jan 2020 to 30Aug 2021.
 ---
 
 ```{r setup, include=FALSE}
@@ -27,6 +27,8 @@ China <- covid19 %>%
   filter(location == "China")
 ```
 
+## Data description
+In this blog, we use the data from XXX. We applied 14 variables and 586 observations.
 
 ```{r}
 table1 <- matrix(c("date", "character","Date of observation", 
@@ -63,22 +65,45 @@ Vaccinations <- China %>%
 ```
 
 ```{r}
+Confirmed_cases <- Confirmed_cases %>% 
+  rename(Date = date,
+         `Total Cases` =  total_cases, 
+         `New Cases` = new_cases, 
+         `Total Cases per Million` = total_cases_per_million, 
+         `New Cases per Million` = new_cases_per_million)
+```
+
+```{r}
+Confirmed_deaths <- Confirmed_deaths %>% 
+  rename(Date = date,
+         `Total Deaths` = total_deaths, 
+         `New Deaths` = new_deaths, 
+         `Total Deaths per Million` = total_deaths_per_million, 
+         `New Deaths per Million` = new_deaths_per_million)
+```
+
+##  COVID-19 Cases Confirmed Summary
+In the daily COVID-19 cases confirmed table, there is a surprising finding. The number of new cases in 03Jun 2020 and 24July 2021 is Negative. This situation may be caused by an error in the previous test result, or other reasons. The data is limited, so that no in-depth analysis will be done in this blog.
+ 
+```{r}
 T1 <- DT::datatable(Confirmed_cases, options = list(pageLength = 4))
 T1
 ```
+
+##  COVID-19 Deaths Summary
+In the COVID-19 Deaths table, there is the same finding as well. The number of new death in the 24July 2020 is negative. This may be a duplicate record when the new death cases were counted previously, or the cause of death was not COVID-19.
+
 
 ```{r}
 T2 <- DT::datatable(Confirmed_deaths, options = list(pageLength = 4))
 T2
 ```
 
-
+##  COVID-19 Cases Confirmed and Death Summary
+In order to show the trend of the COVID-19 Cases Confirmed and Death in China from 22Jan 2020 to 30Aug 2021, we do the plot in this blog.
 ```{r}
 COVID19_update <- China %>% 
   select(total_cases, new_cases, total_deaths, new_deaths)
-
-# %>% pivot_longer(-date, names_to = "type") 
-  
 
 Date <- China %>% 
   select(date)
@@ -97,8 +122,12 @@ update <- ggplot(COVID19_update, aes(x=date, y=value, group=type, color=type)) +
     ylab("Number of COVID19 updates") +
     transition_reveal(date)
 
-##animate(update, nframes = 500, fps = 25,  width = 1200, height = 1000, renderer = gifski_renderer("updates.gif"))
+animate(update, nframes = 500, fps = 25,  width = 1200, height = 1000, renderer = gifski_renderer("updates.gif"))
 ```
+
+
+##  Vaccination Status Summary
+We can see the People Vaccinated Ratio is 0.77168 and Fully Vaccinated Rate is 0.61586. The mean of the daily new vaccinations is 12276031.
 
 ```{r}
 new_vac <- Vaccinations[-c(1:328),]
@@ -106,14 +135,14 @@ new_vac <- new_vac %>%
   select(-c(8:12))
 vac_status <- new_vac %>% 
   summarise(`Total Vaccinations` = max(new_vac$total_vaccinations, na.rm = T),
-            `People Vaccinated Rate` = max(new_vac$people_vaccinated, na.rm = T) / mean(new_vac$population, na.rm = T),
-            `Fully Vaccinated Rate` = max(new_vac$people_fully_vaccinated, na.rm = T) / mean(new_vac$population, na.rm = T),
+            `People Vaccinated Ratio` = max(new_vac$people_vaccinated, na.rm = T) / mean(new_vac$population, na.rm = T),
+            `Fully Vaccinated Ratio` = max(new_vac$people_fully_vaccinated, na.rm = T) / mean(new_vac$population, na.rm = T),
             `Daily New Vaccinations` = mean(new_vac$new_vaccinations, na.rm = T)) 
 
-T2 <- gt(vac_status) %>% 
+T3 <- gt(vac_status) %>% 
   tab_header(title = "Vaccinations Status of China",
              subtitle = "Chinese Vaccinations Status from 15Dec 2020 to 30Aug 2021")
-T2
+T3
 ```
 
 

@@ -4,17 +4,39 @@ body {
 }
 
 h2 {
-  font-family: 'Yusei Magic', sans-serif;
+  font-family: "Times New Roman", Times, serif;
 }
 
 
 .distill-site-header.title {
- font-family: "Times New Roman", Times, serif;;
+ font-family: "Times New Roman", Times, serif;
 }
 
 .distill-site-nav {
-  font-size: 14px;
+  font-size:  18px;
   font-weight: 700;
-  font-family: "Courier New";
   color:  #353535;
 }
+
+.nav-left .title{
+    color: #f1e7dd;
+    font-size:  18px;
+  }
+
+
+  .nav-left .title:hover{
+    color:#2a3d45;
+  }
+
+  .nav-right a{
+    color: #f1e7dd;
+  }
+
+  .nav-right a:hover{
+    color:#2a3d45;
+  }
+  
+
+  
+  
+  
