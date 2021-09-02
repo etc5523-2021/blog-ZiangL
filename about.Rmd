@@ -1,7 +1,7 @@
 ---
-title: "The COVID19 situation in China"
+title: "COVID19 situation in China"
 description: |
-  Some additional details about the website
+  Here is the COVID19 situation in China from 22Jan 2020 to 30Aug 2021.
 ---
 
 ```{r setup, include=FALSE}
@@ -17,6 +17,7 @@ library(ggplot2)
 library(viridis)
 library(hrbrthemes)
 library(gt)
+library(kableExtra)
 ```
 
 ```{r}
@@ -26,19 +27,51 @@ China <- covid19 %>%
   filter(location == "China")
 ```
 
+
+```{r}
+table1 <- matrix(c("date", "character","Date of observation", 
+                   "total_cases", "numberic", "Total confirmed cases of COVID-19",
+                   "new_cases", "numberic", "New confirmed cases of COVID-19", 
+                   "total_cases_per_million", "numberic", "Total confirmed cases of COVID-19 per 1,000,000 people",
+                   "new_cases_per_million", "numberic", "New confirmed cases of COVID-19 per 1,000,000 people", 
+                   "total_deaths", "numberic", "Total deaths attributed to COVID-19",
+                   "new_deaths" , "numberic", "New deaths attributed to COVID-19",
+                   "total_deaths_per_million", "numberic", "Total deaths attributed to COVID-19 per 1,000,000 people",
+                   "new_deaths_per_million", "numberic", "New deaths attributed to COVID-19 per 1,000,000 people",
+                   "total_vaccinations", "numberic", "Total number of COVID-19 vaccination doses administered",
+                   "people_vaccinated", "numberic", "Total number of people who received at least one vaccine dose", 
+                   "people_fully_vaccinated", "numberic", "Total number of people who received all doses prescribed by the vaccination protocol", 
+                   "new_vaccinations", "numberic", "New COVID-19 vaccination doses administered (only calculated for consecutive days)",
+                   "population", "numberic", "Population in 2020"), ncol=3, byrow=TRUE)
+
+colnames(table1) <- c("variable","class","description")
+
+table1 %>%
+  kable(caption = "Data description") %>%
+  kable_styling()
+```
+
 ```{r}
 Confirmed_cases <- China %>% 
   select(date, total_cases, new_cases, total_cases_per_million, new_cases_per_million)
 
 Confirmed_deaths <- China %>% 
-  select(date, total_deaths, new_deaths, new_deaths_smoothed, total_deaths_per_million, new_deaths_per_million, new_deaths_smoothed_per_million)
+  select(date, total_deaths, new_deaths, total_deaths_per_million, new_deaths_per_million)
 
 Vaccinations <- China %>% 
   select(date, total_vaccinations, people_vaccinated, people_fully_vaccinated, total_boosters, new_vaccinations, new_vaccinations_smoothed, total_vaccinations_per_hundred, people_vaccinated_per_hundred, people_fully_vaccinated_per_hundred, total_boosters_per_hundred, new_vaccinations_smoothed_per_million, population)
+```
 
+```{r}
 T1 <- DT::datatable(Confirmed_cases, options = list(pageLength = 4))
 T1
 ```
+
+```{r}
+T2 <- DT::datatable(Confirmed_deaths, options = list(pageLength = 4))
+T2
+```
+
 
 ```{r}
 COVID19_update <- China %>% 
@@ -64,8 +97,7 @@ update <- ggplot(COVID19_update, aes(x=date, y=value, group=type, color=type)) +
     ylab("Number of COVID19 updates") +
     transition_reveal(date)
 
-animate(update, nframes = 500, fps = 25,  width = 1200, height = 1000, 
-        renderer = gifski_renderer("updates.gif"))
+##animate(update, nframes = 500, fps = 25,  width = 1200, height = 1000, renderer = gifski_renderer("updates.gif"))
 ```
 
 ```{r}
