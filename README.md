@@ -1,16 +1,16 @@
 # My Blog
 
 
-This is the blog of [FILL].
-The URL of this blog is [FILL].
+This is the blog of China.
+The URL of this blog is https://ziangl-blog.netlify.app/
 
 ## Blog Post 1
 
 This assessment is due Fri Sep 3 2021 11.55PM AEST.
 
-My selected country is [FILL].
+My selected country is China.
 
-The relevant blog post for this assessment is in [FILL].html
+The relevant blog post for this assessment is in https://ziangl-blog.netlify.app/blog1.html
 
 - [ ] Selected a country
 - [ ] Website with R markdown 
