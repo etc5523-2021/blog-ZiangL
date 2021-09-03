@@ -36,7 +36,17 @@ h2 {
     color:#2a3d45;
   }
   
-
+table
+{
+    background-color: #d0b8ac;
+    border:1px solid #ddd;
+    empty-cells:show;
+    font-size:90%;
+    margin:0 0 20px 0;
+    padding:4px;
+    text-align:left;
+    width:800px;
+}
   
   
   

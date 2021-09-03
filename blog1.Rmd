@@ -86,7 +86,11 @@ Confirmed_deaths <- Confirmed_deaths %>%
 In the daily COVID-19 cases confirmed table, there is a surprising finding. The number of new cases in 03Jun 2020 and 24July 2021 is Negative. This situation may be caused by an error in the previous test result, or other reasons. The data is limited, so that no in-depth analysis will be done in this blog.
  
 ```{r}
-T1 <- DT::datatable(Confirmed_cases, options = list(pageLength = 4))
+T1 <- DT::datatable(Confirmed_cases, options = list(pageLength = 4))%>%
+  formatStyle(
+  'New Cases',
+  target = 'row',
+  backgroundColor = styleEqual(c(-3, -1, 0), c("#a4c3b2"," #cce3de", "#8b8c89")))
 T1
 ```
 
@@ -95,12 +99,18 @@ In the COVID-19 Deaths table, there is the same finding as well. The number of n
 
 
 ```{r}
-T2 <- DT::datatable(Confirmed_deaths, options = list(pageLength = 4))
+T2 <- DT::datatable(Confirmed_deaths, options = list(pageLength = 4))%>%
+  formatStyle(
+  'New Deaths',
+  target = 'row',
+  backgroundColor = styleEqual(c(-3, 0), c("#a4c3b2", "#8b8c89")))
 T2
 ```
 
 ##  COVID-19 Cases Confirmed and Death Summary
+
 In order to show the trend of the COVID-19 Cases Confirmed and Death in China from 22Jan 2020 to 30Aug 2021, we do the plot in this blog.
+
 ```{r}
 COVID19_update <- China %>% 
   select(total_cases, new_cases, total_deaths, new_deaths)
