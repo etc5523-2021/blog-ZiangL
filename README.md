@@ -1,7 +1,7 @@
 # My Blog
 
 
-This is the blog of China.
+This is the blog of Ziang Li.
 The URL of this blog is https://ziangl-blog.netlify.app/
 
 ## Blog Post 1
