@@ -13,6 +13,7 @@ knitr::opts_chunk$set(echo = FALSE, fig.align="center")
 ```
 
 ```{r}
+library(distill)
 library(readr)
 library(tidyverse)
 library(dplyr)
@@ -343,6 +344,35 @@ aaa <- aaa %>%
 aaa
 ```
 
+## Reference
 
+Achim Zeileis and Gabor Grothendieck (2005). zoo: S3 Infrastructure for Regular and Irregular Time Series. Journal of
+  Statistical Software, 14(6), 1-27. doi:10.18637/jss.v014.i06
 
+C. Sievert. Interactive Web-Based Data Visualization with R, plotly, and shiny. Chapman and Hall/CRC Florida, 2020.
+
+Garrett Grolemund, Hadley Wickham (2011). Dates and Times Made Easy with lubridate. Journal of Statistical Software,
+  40(3), 1-25. URL http://www.jstatsoft.org/v40/i03/.
+
+H. Wickham. ggplot2: Elegant Graphics for Data Analysis. Springer-Verlag New York, 2016.
+
+Hadley Wickham, Romain François, Lionel Henry and Kirill Müller (2021). dplyr: A Grammar of Data Manipulation. R
+  package version 1.0.5. https://CRAN.R-project.org/package=dplyr
+  
+Hadley Wickham and Jim Hester (2020). readr: Read Rectangular Text Data. R package version 1.4.0.
+  https://CRAN.R-project.org/package=readr
+
+Jim Hester (2020). glue: Interpreted String Literals. R package version 1.4.2. https://CRAN.R-project.org/package=glue
+
+JJ Allaire, Rich Iannone, Alison Presmanes Hill and Yihui Xie (2021). distill: 'R Markdown' Format for Scientific and
+  Technical Writing. R package version 1.2. https://CRAN.R-project.org/package=distill
+  
+Mehrad Mahmoudian (2020). varhandle: Functions for Robust Variable Handling. R package version 2.0.5.
+  https://CRAN.R-project.org/package=varhandle
+
+Thomas Lin Pedersen and David Robinson (2020). gganimate: A Grammar of Animated Graphics. R package version 1.0.7.
+  https://CRAN.R-project.org/package=gganimate
+  
+Wickham et al., (2019). Welcome to the tidyverse. Journal of Open Source Software, 4(43), 1686,
+  https://doi.org/10.21105/joss.01686
 
