@@ -1,5 +1,8 @@
 ---
 title: "COVID-19 situation in Kuwait"
+output:
+  distill::distill_article:
+    self_contained: false
 description: |
   Here is the COVID-19 situation in Kuwait from 22Jan 2020 to 30Aug 2021.
 ---
@@ -59,7 +62,7 @@ World_wide$Population <- as.numeric(World_wide$Population)
 
 ## The overview of the COVID19 in World Wide
 
-From the figure below, we can clearly observe the situation of COVID19 in various countries as of August 30th 2021. In order to better compare Kuwait, we use a separate color to distinguish. 
+From the figure \@ref(fig:plot1) below, we can clearly observe the situation of COVID19 in various countries as of August 30th 2021. In order to better compare Kuwait, we use a separate color to distinguish. 
 
 Until August 30th 2021, the total number of confirmed cases in Kuwait is 409552, the total number of deaths is 1388, and the confirmed cases account for 9.46% of the total population.
 
@@ -91,7 +94,9 @@ test_dat$tooltip <-
                   "\nTotal Deaths: {total_deaths}",
                   "\nPopulation: {population}",
                   "\nInfection Proportion: {total_cases/population}")
+```
 
+```{r plot1, fig.cap="The COVID19 Situation in the World", fig.align='center'}
 fig <- test_dat %>%
   plot_ly(
     x = ~total_cases, 
@@ -126,9 +131,9 @@ fig
 
 ## COVID19 Situation in Kuwait
 
-The following figure provide more detailed information about COVID19 situation of Kuwait. The left one provides the monthly information to have a overview of the monthly changing trend. The right one is the daily information of the new cases, new deaths and new tests. We can see that the monthly confirmed cases of COVID19 are more than 10k in most of time. Especially in June 2021, the total number of confirmed cases reached 47,465, and the total number of tested persons reached 368,767. But after July 2021, the number of confirmed cases and the number of people tested has dropped significantly.
+The following figure \@ref(fig:plot2) provide more detailed information about COVID19 situation of Kuwait. The left one provides the monthly information to have a overview of the monthly changing trend. The right one is the daily information of the new cases, new deaths and new tests. We can see that the monthly confirmed cases of COVID19 are more than 10k in most of time. Especially in June 2021, the total number of confirmed cases reached 47,465, and the total number of tested persons reached 368,767. But after July 2021, the number of confirmed cases and the number of people tested has dropped significantly.
 
-```{r}
+```{r plot2, fig.cap="COVID19 Situation in Kuwait"}
 KuCovid <- Kuwait %>% 
   select(location, date, new_cases,new_deaths, new_tests, total_tests, positive_rate, tests_per_case) %>% 
   separate(date, c("Year", "Month", "Day"), sep = "-") %>% 
@@ -184,7 +189,7 @@ figa
 
 ## Vaccination situation in Kuwait
 
-Due to the limitations of the data, only the following six dates have recorded the vaccination information. Hence, the following plot compares the number of people vaccinated during the five time periods. 
+Due to the limitations of the data, only the following six dates have recorded the vaccination information. Hence, the following plot \@ref(fig:plot3) compares the number of people vaccinated during the five time periods. 
 <br> It is worth noting that from February 15th to July 3rd, the vaccination rate only increased by about 30% in five months. However, from July 3rd to August 14th, the vaccination rate increased from 33% to 62%.
 
 ```{r}
@@ -198,7 +203,7 @@ population <- 4328553
 ```
 
 
-```{r}
+```{r plot3, fig.cap="Vaccinated Situation in Kuwait"}
 zz<- plot_ly(Vac)
 
 zz <- zz %>% add_trace(x = ~date, y = ~people_vaccinated, name = "Number of Vaccinated", 
@@ -229,11 +234,10 @@ zz
 ```
 
 ## The Impact of Vaccination on the COVID19
-In order to make the data more comparable, we divided the daily new cases changing trend into 6 time periods according to the number of vaccinations. It is not difficult to see from the figure below that although the number of confirmed cases has risen sharply after the start of vaccination, after period 4, the vaccination ratio exceeds 60%, and the number of daily new cases has dropped rapidly. So we can infer that vaccination is effective in reducing the number of confirmed COVID-19
+In order to make the data more comparable, we divided the daily new cases changing trend into 6 time periods according to the number of vaccinations. It is not difficult to see from the figure \@ref(fig:plot4) below that although the number of confirmed cases has risen sharply after the start of vaccination, after period 4, the vaccination ratio exceeds 60%, and the number of daily new cases has dropped rapidly. So we can infer that vaccination is effective in reducing the number of confirmed COVID-19
 
-Similarly, we can see from the figure that the mean and median of positive rate drops significantly in periods 5 and 6.
 
-```{r}
+```{r plot4, fig.cap="Comfirmed Cases under 6 Vaccinated Status"}
 KK <- Kuwait %>% 
   select(location, date, new_cases, new_tests, positive_rate, people_vaccinated)
 
@@ -302,7 +306,9 @@ vac_cases
 
 ```
 
-```{r}
+Similarly, we can see violin plot from the figure \@ref(fig:plot5) that the mean and median of positive rate drops significantly in periods 5 and 6.
+
+```{r plot5, fig.cap="Positive Rate under 6 Vaccinated Status"}
 aaa <- whole_period %>%
   plot_ly(
     x = ~Period,
