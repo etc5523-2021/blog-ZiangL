@@ -47,6 +47,9 @@ table
     text-align:left;
     width:800px;
 }
-  
+
+.user-select-none.svg-container{
+            left: -110px;
+        }
   
   

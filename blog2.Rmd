@@ -109,6 +109,7 @@ fig <- test_dat %>%
     mode = 'markers'
   )
 fig <- fig %>% layout(
+  width = 900, 
   title = "<br>The COVID19 Situation in the World<br>",
   plot_bgcolor='#fef9ef',
   paper_bgcolor='#fef9ef',
@@ -133,7 +134,7 @@ fig
 
 The following figure \@ref(fig:plot2) provide more detailed information about COVID19 situation of Kuwait. The left one provides the monthly information to have a overview of the monthly changing trend. The right one is the daily information of the new cases, new deaths and new tests. We can see that the monthly confirmed cases of COVID19 are more than 10k in most of time. Especially in June 2021, the total number of confirmed cases reached 47,465, and the total number of tested persons reached 368,767. But after July 2021, the number of confirmed cases and the number of people tested has dropped significantly.
 
-```{r plot2, fig.cap="COVID19 Situation in Kuwait"}
+```{r plot2, fig.cap="COVID19 Situation in Kuwait", fig.align='center'}
 KuCovid <- Kuwait %>% 
   select(location, date, new_cases,new_deaths, new_tests, total_tests, positive_rate, tests_per_case) %>% 
   separate(date, c("Year", "Month", "Day"), sep = "-") %>% 
@@ -224,6 +225,7 @@ zz <- zz %>% add_trace(x = ~date, y = ~people_vaccinated/population,
 
 # Set figure title, x and y-axes titles
 zz <- zz %>% layout(
+  width = 900, 
   plot_bgcolor='#fef9ef',
   paper_bgcolor='#fef9ef',
   title = "<br>Vaccinated Situation in Kuwait<br> ", yaxis2 = ay,
@@ -298,7 +300,8 @@ vac_cases <- plot_ly(type = 'scatter', mode = 'lines')%>%
             hovertemplate = paste('<b>Period6</b> (after %vax is 62%)',
                                   '<br><i>Date</i>: %{x}',
                                   '<br><i>Daily new cases</i>: %{y}<br>'))%>%
-  layout(showlegend = F, title='<br>Comfirmed Cases under 6 Vaccinated Status<br> ', plot_bgcolor='#fef9ef',paper_bgcolor='#fef9ef',
+  layout(showlegend = F,  width = 900, 
+         title='<br>Comfirmed Cases under 6 Vaccinated Status<br> ', plot_bgcolor='#fef9ef',paper_bgcolor='#fef9ef',
          xaxis = list(title="Date"),
          yaxis = list(title="<b>Number of Daily New Cases</b>"))
 
@@ -325,6 +328,7 @@ aaa <- whole_period %>%
 
 aaa <- aaa %>%
   layout(title='<br>Positive Rate under 6 Vaccinated Status<br>',
+          width = 900, 
     plot_bgcolor='#fef9ef',
     paper_bgcolor='#fef9ef',
     xaxis = list(
