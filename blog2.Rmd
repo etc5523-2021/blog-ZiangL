@@ -1,0 +1,338 @@
+---
+title: "COVID-19 situation in Kuwait"
+description: |
+  Here is the COVID-19 situation in Kuwait from 22Jan 2020 to 30Aug 2021.
+---
+
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE, fig.align="center")
+```
+
+```{r}
+library(readr)
+library(tidyverse)
+library(dplyr)
+library(zoo)
+library(plotly)
+library(glue)
+library(gganimate)
+library(lubridate)
+library(varhandle)
+library(ggplot2)
+```
+
+
+```{r}
+covid19 <- read.csv("owid-covid-data.csv") 
+
+Kuwait <- covid19 %>% 
+  filter(location == "Kuwait")
+```
+
+```{r}
+World_wide <- covid19 %>% 
+  select(continent, location, date, new_cases, new_deaths, population) %>% 
+  separate(date, c("Year", "Month", "Day"), sep = "-") %>% 
+  select(!Day) %>% 
+  na.omit()
+
+World_wide$Location<- paste(World_wide$continent, "-", World_wide$location,"-" , World_wide$population )
+World_wide$Date <- as.yearmon(paste(World_wide$Year, World_wide$Month), "%Y %m")
+
+World_wide <- transform(World_wide, Date=interaction(Year,Month))
+World_wide$Date <- unfactor(World_wide$Date)
+
+
+World_wide <- World_wide %>% 
+  select(!c(continent, location)) %>% 
+  na.omit() %>% 
+  group_by(Location, Date) %>% 
+  summarise(Total_new_cases = sum(new_cases),
+            Total_new_deaths = sum(new_deaths)) %>% 
+  separate(Location, c("Continent", "Country", "Population"), sep = "-") %>% 
+  filter(!Continent == " ") %>% 
+  na.omit()
+
+World_wide$Population <- as.numeric(World_wide$Population)
+```
+
+## The overview of the COVID19 in World Wide
+
+From the figure below, we can clearly observe the situation of COVID19 in various countries as of August 30th 2021. In order to better compare Kuwait, we use a separate color to distinguish. 
+
+Until August 30th 2021, the total number of confirmed cases in Kuwait is 409552, the total number of deaths is 1388, and the confirmed cases account for 9.46% of the total population.
+
+```{r}
+test_dat <- covid19 %>% 
+  filter (date == "2021-08-29") %>% 
+  filter(location != "World" ) %>% 
+  filter(location != "Asia") %>% 
+  filter(location != "Africa") %>% 
+  filter(location != "Europe") %>% 
+  filter(location != "European Union") %>% 
+  filter(location != "International") %>% 
+  filter(location != "North America") %>% 
+  filter(location != "Oceania") %>% 
+  filter(location != "South America") %>% 
+  filter(location != "Kuwait")
+
+k <- covid19 %>% 
+   filter (date == "2021-08-29") %>% 
+   filter(location == "Kuwait")
+
+k[2] <- "Kuwait"
+test_dat <- rbind(test_dat, k)
+
+test_dat$tooltip <- 
+  glue::glue_data(test_dat, 
+                  "Country: {location}", 
+                  "\nTotal Cases: {total_cases}",
+                  "\nTotal Deaths: {total_deaths}",
+                  "\nPopulation: {population}",
+                  "\nInfection Proportion: {total_cases/population}")
+
+fig <- test_dat %>%
+  plot_ly(
+    x = ~total_cases, 
+    y = ~total_deaths, 
+    size = ~population, 
+    color = ~continent, 
+    text = ~tooltip, 
+    hoverinfo = "text",
+    type = 'scatter',
+    mode = 'markers'
+  )
+fig <- fig %>% layout(
+  title = "<br>The COVID19 Situation in the World<br>",
+  plot_bgcolor='#fef9ef',
+  paper_bgcolor='#fef9ef',
+    xaxis = list(
+      title = "Number of total confirmed cases",
+      type = "log"
+    ),
+    yaxis = list(
+      title = "Number of toal deaths",
+      type = "log"
+    )
+  ) %>% 
+  animation_opts(
+    1000, easing = "elastic", redraw = FALSE
+  )
+
+fig
+```
+
+
+## COVID19 Situation in Kuwait
+
+The following figure provide more detailed information about COVID19 situation of Kuwait. The left one provides the monthly information to have a overview of the monthly changing trend. The right one is the daily information of the new cases, new deaths and new tests. We can see that the monthly confirmed cases of COVID19 are more than 10k in most of time. Especially in June 2021, the total number of confirmed cases reached 47,465, and the total number of tested persons reached 368,767. But after July 2021, the number of confirmed cases and the number of people tested has dropped significantly.
+
+```{r}
+KuCovid <- Kuwait %>% 
+  select(location, date, new_cases,new_deaths, new_tests, total_tests, positive_rate, tests_per_case) %>% 
+  separate(date, c("Year", "Month", "Day"), sep = "-") %>% 
+  select(!Day) %>% 
+  na.omit()
+
+KuCovid$Date <- as.yearmon(paste(KuCovid$Year, KuCovid$Month), "%Y %m")
+  
+KuCovid <- KuCovid %>% 
+  na.omit() %>% 
+  group_by(location, Date) %>% 
+  summarise(Total_new_cases = sum(new_cases),
+            Total_new_deaths = sum(new_deaths),
+            Total_new_tests = sum(new_tests)) %>% 
+  na.omit()
+
+
+fig1 <- plot_ly(type = 'scatter', mode = 'lines')%>%
+  add_trace(x = ~KuCovid$Date, y = ~KuCovid$Total_new_cases, name='Monthly new cases', 
+            line = list(color = '#284b63', dash = 'dash'),
+            hovertemplate = paste('<br><i>Monthly new cases</i>: %{y}<br>'))%>%
+  add_trace(x = ~KuCovid$Date, y = ~KuCovid$Total_new_deaths, name='Monthly new deaths', 
+            line = list(color = '#1697a6', dash = 'dash'),
+            hovertemplate = paste('<br><i>Monthly new deaths</i>: %{y}<br>')) %>% 
+  add_trace(x = ~KuCovid$Date, y = ~KuCovid$Total_new_tests, name='Monthly new tests', 
+            line = list(color = '#ffc24b', dash = 'dash'),
+            hovertemplate = paste('<br><i>Monthly new tests</i>: %{y}<br>')) %>% 
+  layout(showlegend = T, title='Monthly',
+         xaxis = list(rangeslider = list(visible = T)))
+
+fig2 <- plot_ly(type = 'scatter', mode = 'lines')%>%
+  add_trace(x = ~Kuwait$date, y = ~Kuwait$new_cases, name='Daily new cases', line = list(color = '#284b63'),
+            hovertemplate = paste('<i>Date</i>: %{x}',
+                        '<br><i>Daily new cases</i>: %{y}<br>'))%>%
+  add_trace(x = ~Kuwait$date, y = ~Kuwait$new_deaths, name='Daily new deaths', line = list(color = '#1697a6'),
+            hovertemplate = paste('<i>Date</i>: %{x}',
+                        '<br><i>Daily new deaths</i>: %{y}<br>'))%>%
+  add_trace(x = ~Kuwait$date, y = ~Kuwait$new_tests, name='Daily new tests', line = list(color = '#ffc24b'),
+            hovertemplate = paste('<i>Date</i>: %{x}',
+                        '<br><i>Daily new tests</i>: %{y}<br>'))%>%
+  layout(showlegend = T, title='Daily',
+         xaxis = list(rangeslider = list(visible = T)))
+
+figa <- subplot(fig1, fig2 ) %>% 
+  layout(title = "<br>COVID19 Situation in Kuwait<br> ", width = 900, 
+         plot_bgcolor='#fef9ef',
+         paper_bgcolor='#fef9ef'
+         )
+         
+figa
+
+```
+
+## Vaccination situation in Kuwait
+
+Due to the limitations of the data, only the following six dates have recorded the vaccination information. Hence, the following plot compares the number of people vaccinated during the five time periods. 
+<br> It is worth noting that from February 15th to July 3rd, the vaccination rate only increased by about 30% in five months. However, from July 3rd to August 14th, the vaccination rate increased from 33% to 62%.
+
+```{r}
+Vac <- Kuwait %>% 
+  drop_na (people_vaccinated) %>% 
+  group_by(date) %>% 
+  summarise(people_vaccinated = people_vaccinated,
+            vaccinated_proportion = people_vaccinated/population)
+population <- 4328553
+
+```
+
+
+```{r}
+zz<- plot_ly(Vac)
+
+zz <- zz %>% add_trace(x = ~date, y = ~people_vaccinated, name = "Number of Vaccinated", 
+                       type = "bar", bar = list(color = '#284b63'),
+                       hovertemplate = paste('<i>Date</i>: %{x}',
+                        '<br><i>People vaccinated</i>: %{y}<br>'))
+
+ay <- list(
+  overlaying = "y",
+  side = "right",
+  title = "<b>Vaccinated Proportion</b> ")
+
+zz <- zz %>% add_trace(x = ~date, y = ~people_vaccinated/population, 
+                       name = "Vaccinated Proportion", yaxis = "y2", mode = "lines+markers", 
+                       type = "scatter", line = list(color = '#ffc24b'),
+                       hovertemplate = paste('<i>Date</i>: %{x}',
+                        '<br><i>Vaccinated Proportion</i>: %{y}<br>'))
+
+# Set figure title, x and y-axes titles
+zz <- zz %>% layout(
+  plot_bgcolor='#fef9ef',
+  paper_bgcolor='#fef9ef',
+  title = "<br>Vaccinated Situation in Kuwait<br> ", yaxis2 = ay,
+  xaxis = list(title="Date "),
+  yaxis = list(title="<b>Number of Vaccinated</b>"))
+
+zz
+```
+
+## The Impact of Vaccination on the COVID19
+In order to make the data more comparable, we divided the daily new cases changing trend into 6 time periods according to the number of vaccinations. It is not difficult to see from the figure below that although the number of confirmed cases has risen sharply after the start of vaccination, after period 4, the vaccination ratio exceeds 60%, and the number of daily new cases has dropped rapidly. So we can infer that vaccination is effective in reducing the number of confirmed COVID-19
+
+Similarly, we can see from the figure that the mean and median of positive rate drops significantly in periods 5 and 6.
+
+```{r}
+KK <- Kuwait %>% 
+  select(location, date, new_cases, new_tests, positive_rate, people_vaccinated)
+
+p1 <- KK %>% 
+  subset( date < "2021-02-15") %>% 
+  mutate(Period = "Period1")
+
+p2 <- KK %>% 
+  subset( date> "2021-02-16" & date < "2021-03-22") %>% 
+  mutate(Period = "Period2")
+
+p3 <- KK %>% 
+  subset( date> "2021-03-23" & date < "2021-04-18") %>% 
+  mutate(Period = "Period3")
+
+p4 <- KK %>% 
+  subset( date> "2021-04-19" & date < "2021-07-03") %>% 
+  mutate(Period = "Period4")
+
+p5 <- KK %>% 
+  subset( date> "2021-07-04" & date < "2021-08-14") %>% 
+  mutate(Period = "Period5")
+
+p6 <- KK %>% 
+  subset( date> "2021-08-15") %>% 
+  mutate(Period = "Period6")
+
+whole_period <- rbind(p1,p2,p3,p4,p5,p6)
+
+vac_cases <- plot_ly(type = 'scatter', mode = 'lines')%>%
+  add_trace(x = ~p1$date, y = ~p1$new_cases, 
+            name='Before2021-02-15', line = list(color = '#284b63'),
+            hovertemplate = paste('<b>Period1</b> (before vax)',
+                                  '<br><i>Date</i>: %{x}',
+                                  '<br><i>Daily new cases</i>: %{y}<br>'))%>%
+  add_trace(x = ~p2$date, y = ~p2$new_cases, 
+            name='02-16 to 03-22', line = list(color = '#1697a6'),
+            hovertemplate = paste('<b>Period2</b> (%vax between 3%-7%)',
+                                  '<br><i>Date</i>: %{x}',
+                                  '<br><i>Daily new cases</i>: %{y}<br>'))%>%
+  add_trace(x = ~p3$date, y = ~p3$new_cases,
+            name='03-23 to 04-18', line = list(color = '#ffc24b'),
+            hovertemplate = paste('<b>Period3</b> (%vax between 7%-18%)',
+                                  '<br><i>Date</i>: %{x}',
+                                  '<br><i>Daily new cases</i>: %{y}<br>'))%>%
+  add_trace(x = ~p4$date, y = ~p4$new_cases, 
+            name='04-19 to 07-03', line = list(color = '#1a936f'),
+            hovertemplate = paste('<b>Period4</b> (%vax between 18%-33%)',
+                                  '<br><i>Date</i>: %{x}',
+                                  '<br><i>Daily new cases</i>: %{y}<br>'))%>%
+  add_trace(x = ~p5$date, y = ~p5$new_cases, 
+            name='07-04 to 08-14', line = list(color = '#ffaf87'),
+            hovertemplate = paste('<b>Period5</b> (%vax betweenc 33%-62%)',
+                                  '<br><i>Date</i>: %{x}',
+                                  '<br><i>Daily new cases</i>: %{y}<br>'))%>%
+  add_trace(x = ~p6$date, y = ~p6$new_cases, 
+            name='After 08-15', line = list(color = '#967aa1'),
+            hovertemplate = paste('<b>Period6</b> (after %vax is 62%)',
+                                  '<br><i>Date</i>: %{x}',
+                                  '<br><i>Daily new cases</i>: %{y}<br>'))%>%
+  layout(showlegend = F, title='<br>Comfirmed Cases under 6 Vaccinated Status<br> ', plot_bgcolor='#fef9ef',paper_bgcolor='#fef9ef',
+         xaxis = list(title="Date"),
+         yaxis = list(title="<b>Number of Daily New Cases</b>"))
+
+vac_cases
+
+```
+
+```{r}
+aaa <- whole_period %>%
+  plot_ly(
+    x = ~Period,
+    y = ~positive_rate,
+    split = ~Period,
+    type = 'violin',
+    box = list(
+      visible = T
+    ),
+    meanline = list(
+      visible = T
+    )
+  ) 
+
+aaa <- aaa %>%
+  layout(title='<br>Positive Rate under 6 Vaccinated Status<br>',
+    plot_bgcolor='#fef9ef',
+    paper_bgcolor='#fef9ef',
+    xaxis = list(
+      title = "Period"
+    ),
+    yaxis = list(
+      title = "Positive Rate ",
+      zeroline = F
+    )
+  )
+
+aaa
+```
+
+
+
+

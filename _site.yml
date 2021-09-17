@@ -11,8 +11,12 @@ navbar:
   right:
     - text: "Home"
       href: index.html
-    - text: "China COVID19"
-      href: blog1.html
+    - text: "COVID19 Blog"
+      menu:
+        - text: "China COVID19"
+          href: blog1.html
+        - text: "Kuwait COVID19"
+          herf: blog2.html
   search: true
 output: 
   distill::distill_article:
